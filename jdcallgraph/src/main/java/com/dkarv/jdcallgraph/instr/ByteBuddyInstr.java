@@ -56,11 +56,12 @@ public class ByteBuddyInstr extends Instr {
     final Advice constructorAdvice = Advice.to(ConstructorTracer.class);
 
 
-
     ResettableClassFileTransformer agent = new AgentBuilder.Default()
         .with(new TracerLogger())
-        .type(ElementMatchers.not(ElementMatchers.nameStartsWith("com.dkarv.jdcallgraph.")))
-        .transform(new AgentBuilder.Transformer() {
+//        .type(ElementMatchers.not(ElementMatchers.nameStartsWith("com.dkarv.jdcallgraph.")))
+            .type(ElementMatchers.nameStartsWith ("io.harness.")) //TODO: parameterize
+
+            .transform(new AgentBuilder.Transformer() {
           @Override
           public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
             builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod(), methodAdvice));
