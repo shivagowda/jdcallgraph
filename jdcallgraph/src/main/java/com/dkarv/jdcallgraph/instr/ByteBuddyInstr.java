@@ -59,7 +59,7 @@ public class ByteBuddyInstr extends Instr {
     ResettableClassFileTransformer agent = new AgentBuilder.Default()
         .with(new TracerLogger())
 //        .type(ElementMatchers.not(ElementMatchers.nameStartsWith("com.dkarv.jdcallgraph.")))
-            .type(ElementMatchers.nameStartsWith ("io.harness.")) //TODO: parameterize
+            .type(ElementMatchers.nameStartsWith("io.harness.")) //TODO: parameterize
 
             .transform(new AgentBuilder.Transformer() {
           @Override
