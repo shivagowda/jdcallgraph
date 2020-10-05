@@ -48,12 +48,8 @@ public class CallRecorder {
     try {
       LOG.trace(">> {}{}", item, item.isReturnSafe() ? "" : " (return unsafe)");
       long threadId = Thread.currentThread().getId();
-      CallGraph graph = GRAPHS.get(threadId);
-      if (graph == null) {
-        graph = new CallGraph(threadId);
-        GRAPHS.put(threadId, graph);
-      }
-      graph.called(item);
+      GRAPHS.putIfAbsent(threadId, new CallGraph(threadId));
+      GRAPHS.get(threadId).called(item);
     } catch (Throwable e) {
       LOG.error("Error in beforeMethod", e);
     }
