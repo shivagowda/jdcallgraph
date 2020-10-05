@@ -49,12 +49,8 @@ public class CsvCoverageFileWriter implements GraphWriter {
 
   @Override
   public void edge(StackItem from, StackItem to) throws IOException {
-    Set<StackItem> list = usedIn.get(to);
-    if (list == null) {
-      list = new HashSet<>();
-      usedIn.put(to, list);
-    }
-    list.add(currentItem);
+    usedIn.putIfAbsent(to, new HashSet<StackItem>());
+    usedIn.get(to).add(currentItem);
   }
 
   @Override
