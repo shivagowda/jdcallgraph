@@ -44,13 +44,20 @@ public class CsvCoverageFileWriter implements GraphWriter {
 
   @Override
   public void node(StackItem method) throws IOException {
-    currentItem = method;
+    //shiv: only if method is @Test
+
+    if(method.getShortMethodName().contains("getBuildByID"))
+      currentItem = method;
   }
 
   @Override
   public void edge(StackItem from, StackItem to) throws IOException {
+    if(currentItem == null && from.getShortMethodName().contains("getBuildByID"))
+      currentItem = from;
+
     usedIn.putIfAbsent(to, new HashSet<StackItem>());
-    usedIn.get(to).add(currentItem);
+    usedIn.get(to).add(currentItem); //TODO: shiv
+//    usedIn.get(to).add(from);
   }
 
   @Override
@@ -65,13 +72,22 @@ public class CsvCoverageFileWriter implements GraphWriter {
   @Override
   public void close() throws IOException {
     for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
+      if(entry.getValue().size() == 0) continue;
       String key = entry.getKey().toString();
-      writer.append(key);
+      boolean sourceAdded = false;
       for (StackItem item : entry.getValue()) {
-        writer.append(';');
-        writer.append(item.toString());
+        if(item != null) {
+          if (!sourceAdded) {
+            writer.append(key);
+            sourceAdded = true;
+          }
+          writer.append(';');
+          writer.append(item.toString());
+        }
       }
-      writer.append('\n');
+      if(sourceAdded) {
+        writer.append('\n');
+      }
     }
     writer.close();
   }
