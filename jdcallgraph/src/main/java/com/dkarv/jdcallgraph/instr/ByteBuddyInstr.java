@@ -26,6 +26,8 @@ package com.dkarv.jdcallgraph.instr;
 import com.dkarv.jdcallgraph.instr.bytebuddy.*;
 import com.dkarv.jdcallgraph.instr.bytebuddy.tracer.ConstructorTracer;
 import com.dkarv.jdcallgraph.instr.bytebuddy.tracer.MethodTracer;
+import com.dkarv.jdcallgraph.instr.bytebuddy.tracer.TestConstructorTracer;
+import com.dkarv.jdcallgraph.instr.bytebuddy.tracer.TestMethodTracer;
 import com.dkarv.jdcallgraph.util.log.Logger;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
@@ -35,6 +37,8 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
+import org.junit.Test;
+//import org.junit.jupiter.api.Test; //TODO: support different unit test frameworks
 
 import java.lang.instrument.Instrumentation;
 import java.util.List;
@@ -53,20 +57,23 @@ public class ByteBuddyInstr extends Instr {
   @Override
   public void instrument(Instrumentation instrumentation) {
     final Advice methodAdvice = Advice.to(MethodTracer.class);
+    final Advice testMethodAdvice = Advice.to(TestMethodTracer.class);
     final Advice constructorAdvice = Advice.to(ConstructorTracer.class);
+    final Advice testConstructorAdvice = Advice.to(TestConstructorTracer.class);
 
 
     ResettableClassFileTransformer agent = new AgentBuilder.Default()
         .with(new TracerLogger())
-//        .type(ElementMatchers.not(ElementMatchers.nameStartsWith("com.google.")))
             .type(ElementMatchers.nameStartsWith("io.harness.")) //TODO: parameterize
-
             .transform(new AgentBuilder.Transformer() {
           @Override
           public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
-            builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod(), methodAdvice));
-            builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isConstructor(), constructorAdvice));
-            return builder;
+              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod().and(ElementMatchers.isAnnotatedWith(Test.class)), testMethodAdvice));
+              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod().and(ElementMatchers.not(ElementMatchers.isAnnotatedWith(Test.class))), methodAdvice));
+              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isConstructor().and(ElementMatchers.isAnnotatedWith(Test.class)), testConstructorAdvice));
+              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isConstructor().and(ElementMatchers.not(ElementMatchers.isAnnotatedWith(Test.class))), constructorAdvice));
+
+              return builder;
           }
         })
         .installOn(instrumentation);

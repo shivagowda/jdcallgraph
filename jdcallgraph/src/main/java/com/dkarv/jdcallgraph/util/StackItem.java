@@ -29,29 +29,30 @@ public class StackItem {
   private final String className;
   private final String methodName;
   private final int lineNumber;
-  private final boolean returnSafe;
+  private final boolean testMethod, returnSafe;
 
   private final String formatted;
 
-  public StackItem(String className, String methodName, int lineNumber, boolean returnSafe) {
+  public StackItem(String className, String methodName, int lineNumber, boolean testMethod, boolean returnSafe) {
     this.className = className;
     this.methodName = methodName;
     this.lineNumber = lineNumber;
-
+    this.testMethod = testMethod;
     this.returnSafe = returnSafe;
 
     this.formatted = Formatter.format(this);
   }
 
   public StackItem(String type, String method, String signature, int lineNumber) {
-    this(type, method, signature, lineNumber, true);
+    this(type, method, signature, lineNumber, false,true); //TODO. shiv
   }
 
-  public StackItem(String type, String method, String signature, int lineNumber, boolean returnSafe) {
+  public StackItem(String type, String method, String signature, int lineNumber, boolean testMethod, boolean returnSafe) {
     this.className = type;
     // TODO store them separated
     this.methodName = method + signature;
     this.lineNumber = lineNumber;
+    this.testMethod = testMethod;
     this.returnSafe = returnSafe;
 
     this.formatted = Formatter.format(this);
@@ -119,6 +120,10 @@ public class StackItem {
 
   public boolean isReturnSafe() {
     return returnSafe;
+  }
+
+  public boolean isTestMethod() {
+    return testMethod;
   }
 
   public boolean equalTo(StackTraceElement element) {

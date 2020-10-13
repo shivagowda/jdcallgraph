@@ -33,7 +33,7 @@ public class ConstructorTracer {
 
   @Advice.OnMethodEnter(inline = false)
   public static StackItem enter(@Advice.Origin("#t") String type, @Advice.Origin("#m") String method, @Advice.Origin("#s") String signature) {
-    return CallableTracer.enter(type, method, signature, false);
+    return CallableTracer.enter(type, method, signature, false,false);
   }
 
   @Advice.OnMethodExit(inline = false)

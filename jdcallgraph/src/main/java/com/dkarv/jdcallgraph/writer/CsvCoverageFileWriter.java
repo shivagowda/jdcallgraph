@@ -52,7 +52,7 @@ public class CsvCoverageFileWriter implements GraphWriter {
 
   @Override
   public void edge(StackItem from, StackItem to) throws IOException {
-    if(currentItem == null && from.getShortMethodName().contains("getBuildByID"))
+    if(currentItem == null && from.isTestMethod())
       currentItem = from;
 
     usedIn.putIfAbsent(to, new HashSet<StackItem>());

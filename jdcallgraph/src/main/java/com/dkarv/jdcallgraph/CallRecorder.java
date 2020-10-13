@@ -39,9 +39,9 @@ public class CallRecorder {
    */
   static final Map<Long, CallGraph> GRAPHS = new HashMap<>();
 
-  public static void beforeMethod(String className, String methodName, int lineNumber, boolean
+  public static void beforeMethod(String className, String methodName, int lineNumber, boolean testMethod, boolean
       returnSafe) {
-    beforeMethod(new StackItem(className, methodName, lineNumber, returnSafe));
+    beforeMethod(new StackItem(className, methodName, lineNumber, testMethod, returnSafe));
   }
 
   public static void beforeMethod(StackItem item) {
@@ -55,9 +55,9 @@ public class CallRecorder {
     }
   }
 
-  public static void afterMethod(String className, String methodName, int lineNumber, boolean
+  public static void afterMethod(String className, String methodName, int lineNumber, boolean testMethod, boolean
       returnSafe) {
-    afterMethod(new StackItem(className, methodName, lineNumber, returnSafe));
+    afterMethod(new StackItem(className, methodName, lineNumber,testMethod, returnSafe));
   }
 
   public static void afterMethod(StackItem item) {

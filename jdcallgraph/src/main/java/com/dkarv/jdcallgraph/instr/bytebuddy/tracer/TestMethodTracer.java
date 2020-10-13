@@ -23,27 +23,23 @@
  */
 package com.dkarv.jdcallgraph.instr.bytebuddy.tracer;
 
-import com.dkarv.jdcallgraph.CallRecorder;
-import com.dkarv.jdcallgraph.instr.bytebuddy.util.*;
 import com.dkarv.jdcallgraph.util.StackItem;
-import com.dkarv.jdcallgraph.util.config.ComputedConfig;
-import com.dkarv.jdcallgraph.util.log.*;
+import com.dkarv.jdcallgraph.util.log.Logger;
+import net.bytebuddy.asm.Advice;
 
-public abstract class CallableTracer {
-  private static final Logger LOG = new Logger(CallableTracer.class);
-  private static final boolean needsLine = ComputedConfig.lineNeeded();
+public class TestMethodTracer {
+  public static final Logger LOG = new Logger(TestMethodTracer.class);
 
-  public static StackItem enter(String type, String method, String signature, boolean testMethod, boolean returnSafe) {
-    signature = Format.simplifySignatureArrays(signature);
 
-    int lineNumber= -1;
-
-    StackItem item = new StackItem(type, method, signature, lineNumber, testMethod, returnSafe);
-    CallRecorder.beforeMethod(item);
-    return item;
+  @Advice.OnMethodEnter(inline = false)
+  public static StackItem enter(@Advice.Origin("#t") String type,
+                                @Advice.Origin("#m") String method,
+                                @Advice.Origin("#s") String signature) {
+    return CallableTracer.enter(type, method, signature, true,true);
   }
 
-  public static void exit(StackItem item) {
-    CallRecorder.afterMethod(item);
+  @Advice.OnMethodExit(inline = false, onThrowable = Throwable.class)
+  public static void exit(@Advice.Enter StackItem item) {
+    CallableTracer.exit(item);
   }
 }
