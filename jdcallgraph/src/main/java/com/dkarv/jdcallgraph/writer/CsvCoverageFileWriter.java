@@ -46,7 +46,7 @@ public class CsvCoverageFileWriter implements GraphWriter {
   public void node(StackItem method) throws IOException {
     //shiv: only if method is @Test
 
-    if(method.getShortMethodName().contains("getBuildByID"))
+    if(method.getShortMethodName().equals("getBuildByID"))
       currentItem = method;
   }
 
