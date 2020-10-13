@@ -84,18 +84,20 @@ public class CallGraph {
     if (calls.isEmpty()) {
       // First node
       String identifier = checkStartCondition(method);
-      if (identifier != null) {
-        calls.push(method);
-        for (GraphWriter w : writers) {
-          w.start(identifier);
-          w.node(method);
-        }
-      } else {
+      if(identifier == null) {
         LOG.info("Skip node {} because start condition not fulfilled", method);
+        return;
       }
-    } else {
+      calls.push(method);
+      for (GraphWriter w : writers) {
+        w.start(identifier);
+        w.node(method);
+      }
+
+    } else { //it's not a first node in the stack
       StackItem top = calls.peek();
-      if (!top.isReturnSafe()) {
+      /* TODO: do we really need to cleanup the calls stack to keep in sync with system call-stack?
+      if (!top.isReturnSafe()) { //if constructor
         // The parent might be a constructor where we can't track the method exit if an exception occurs
         // check stack trace and remove element from calls if it returned unnoticed
         // n == 0: Thread.currentThread().getStackTrace()
@@ -110,9 +112,10 @@ public class CallGraph {
           // The parent constructor already returned but we did not notice
           // TODO writer.end?
           LOG.debug("Remove element {}, its return was not noticed", calls.pop());
+          if(calls.empty()) break;
           top = calls.peek();
         }
-      }
+      } */
 
       for (GraphWriter w : writers) {
         w.edge(top, method);
