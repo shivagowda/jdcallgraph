@@ -97,6 +97,7 @@ public class CallGraph {
     } else { //it's not a first node in the stack
       StackItem top = calls.peek();
       /* TODO: do we really need to cleanup the calls stack to keep in sync with system call-stack?
+        This is causing to miss mapping of some methods
       if (!top.isReturnSafe()) { //if constructor
         // The parent might be a constructor where we can't track the method exit if an exception occurs
         // check stack trace and remove element from calls if it returned unnoticed
