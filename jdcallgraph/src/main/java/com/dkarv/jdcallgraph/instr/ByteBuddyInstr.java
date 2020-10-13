@@ -70,8 +70,8 @@ public class ByteBuddyInstr extends Instr {
           public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
               builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod().and(ElementMatchers.isAnnotatedWith(Test.class)), testMethodAdvice));
               builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod().and(ElementMatchers.not(ElementMatchers.isAnnotatedWith(Test.class))), methodAdvice));
-              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isConstructor().and(ElementMatchers.isAnnotatedWith(Test.class)), testConstructorAdvice));
-              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isConstructor().and(ElementMatchers.not(ElementMatchers.isAnnotatedWith(Test.class))), constructorAdvice));
+              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().constructor(ElementMatchers.isConstructor().and(ElementMatchers.isAnnotatedWith(Test.class)), testConstructorAdvice));
+              builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().constructor(ElementMatchers.isConstructor().and(ElementMatchers.not(ElementMatchers.isAnnotatedWith(Test.class))), constructorAdvice));
 
               return builder;
           }
