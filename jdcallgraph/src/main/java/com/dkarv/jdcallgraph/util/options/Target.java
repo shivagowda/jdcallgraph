@@ -54,7 +54,12 @@ public enum Target {
   /**
    * Data dependence graph as csv.
    */
-  DD_TRACE;
+  DD_TRACE,
+
+  /**
+   * All methods used per entry in Graph DB format
+   */
+  GRAPH_DB;
 
   public boolean isDataDependency() {
     return this == Target.DD_DOT || this == Target.DD_TRACE;

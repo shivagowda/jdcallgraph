@@ -29,16 +29,21 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CsvTraceFileWriter implements GraphWriter {
+public class GraphDBTraceFileWriter implements GraphWriter {
   FileWriter writer;
 
   private final Set<StackItem> trace = new HashSet<>();
+  private final String CALLER = "caller";
+  private final String CALLEE = "callee";
+  private final String CALLERNODE = "(caller)";
+  private final String CALLEENODE = "(callee)";
+
 
   @Override
   public void start(String identifier) throws IOException {
     if (writer == null) {
       int index = identifier.lastIndexOf('/');
-      writer = new FileWriter(identifier.substring(0, index) + "/trace.csv");
+      writer = new FileWriter(identifier.substring(0, index) + "/graphdb.txt");
     }
   }
 
@@ -50,15 +55,18 @@ public class CsvTraceFileWriter implements GraphWriter {
 
   @Override
   public void edge(StackItem from, StackItem to) throws IOException {
-//    if (!trace.contains(to)) {
-//      writer.append(';');
-//      writer.append(to.toString());
-//      trace.add(to);
-//    }
-    writer.append(from.toString());
-    writer.append(';');
-    writer.append(to.toString());
-    writer.append('\n');
+    // Create nodes if they don't exist
+    writer.append(("MERGE "));
+    writer.append(from.toGraphDB(CALLER));
+    writer.append(("MERGE "));
+    writer.append(to.toGraphDB(CALLEE));
+
+    // Create relationship between caller and callee if it doesn't exist already
+    writer.append("MERGE");
+    writer.append(CALLERNODE);
+    writer.append("-[:CALLS]->");
+    writer.append(CALLEENODE);
+    writer.append(";\n");
   }
 
   @Override

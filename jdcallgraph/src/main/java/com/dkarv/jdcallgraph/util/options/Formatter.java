@@ -47,7 +47,33 @@ public class Formatter {
     return result.toString();
   }
 
-  public static String replace(String id, StackItem item) {
+  // formatting for GraphDB
+  public static String graphDBFormat(StackItem item, String nodeName) {
+    StringBuffer result = new StringBuffer();
+//    result.append(item.getPackageName()).append('|');
+//    result.append(item.getShortClassName()).append('|');
+//    result.append(item.getShortMethodName()).append('|');
+    String parameters = item.getMethodParameters();
+    if(parameters.isEmpty()) {
+      parameters = "void";
+    }
+//    result.append(parameters);
+//    return result.toString();
+//    CREATE (TheMatrix:Movie {title:'The Matrix', released:1999, tagline:'Welcome to the Real World'})
+    result.append("(");
+    String codeType = item.isTestMethod() ? ":Test" : ":Source";
+    result.append(nodeName).append(codeType);
+    result.append(" {package: '").append(item.getPackageName()).append("'");
+    result.append(", class:'").append(item.getShortClassName()).append("'");
+    result.append(", method:'").append(item.getShortMethodName()).append("'");
+    result.append(", params:'").append(parameters).append("'");
+    result.append("})\n");
+
+
+    return result.toString();
+  }
+
+    public static String replace(String id, StackItem item) {
     switch (id) {
       case "package":
         return item.getPackageName();

@@ -58,6 +58,8 @@ public class CallGraph {
         return new CsvCoverageFileWriter();
       case TRACE:
         return new CsvTraceFileWriter();
+      case GRAPH_DB:
+        return new GraphDBTraceFileWriter();
       default:
         throw new IllegalArgumentException("Unknown writeTo: " + t);
     }

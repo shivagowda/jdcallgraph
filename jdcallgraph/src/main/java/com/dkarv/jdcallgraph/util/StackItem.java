@@ -75,6 +75,10 @@ public class StackItem {
     return formatted;
   }
 
+  public String toGraphDB(String nodeName) {
+    return Formatter.graphDBFormat(this, nodeName);
+  }
+
   @Override
   public int hashCode() {
     return 31 * 31 * className.hashCode()
