@@ -46,7 +46,7 @@ public class CallRecorder {
       Long threadId = Thread.currentThread().getId();
       synchronized (GRAPHS) {
         if (!GRAPHS.containsKey(threadId)) {
-          System.out.println("shiv: thread-id: " + threadId + "  name: " + Thread.currentThread().getName() + " Time: " + System.currentTimeMillis() + " map size: " + GRAPHS.size());
+//          System.out.println("shiv: thread-id: " + threadId + "  name: " + Thread.currentThread().getName() + " Time: " + System.currentTimeMillis() + " map size: " + GRAPHS.size());
 
           GRAPHS.put(threadId, new CallGraph(threadId));
         }
