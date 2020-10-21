@@ -34,13 +34,12 @@ import java.util.*;
 
 public class CallGraph {
   private static final Logger LOG = new Logger(CallGraph.class);
-  private static final String FOLDER = "cg/";
   private final long threadId;
   final Stack<StackItem> calls = new Stack<>();
 
   final List<GraphWriter> writers = new ArrayList<>();
 
-  public CallGraph(long threadId) {
+  public CallGraph(long threadId) throws IOException {
     this.threadId = threadId;
     Target[] targets = Config.getInst().writeTo();
     for (Target target : targets) {
@@ -51,7 +50,7 @@ public class CallGraph {
     }
   }
 
-  static GraphWriter createWriter(Target t, boolean multiGraph) {
+  public GraphWriter createWriter(Target t, boolean multiGraph) throws IOException {
     // TODO redo this with new remove duplicate strategies
     switch (t) {
       case COVERAGE:
@@ -60,39 +59,19 @@ public class CallGraph {
         return new CsvTraceFileWriter();
       case GRAPH_DB:
         return new GraphDBTraceFileWriter();
+      case GRAPH_DB_CSV:
+        return new GraphDBCSVFileWriter(this.threadId);
       default:
         throw new IllegalArgumentException("Unknown writeTo: " + t);
-    }
-  }
-
-  /**
-   * Check whether the method is a valid start condition.
-   *
-   * @param method called method
-   * @return identifier if method is a valid start condition, null otherwise
-   */
-  String checkStartCondition(StackItem method) {
-    switch (Config.getInst().groupBy()) {
-      case THREAD:
-        return FOLDER + String.valueOf(threadId);
-      case ENTRY:
-        return FOLDER + method.toString();
-      default:
-        throw new IllegalArgumentException("Unknown groupBy: " + Config.getInst().groupBy());
     }
   }
 
   public void called(StackItem method) throws IOException {
     if (calls.isEmpty()) {
       // First node
-      String identifier = checkStartCondition(method);
-      if(identifier == null) {
-        LOG.info("Skip node {} because start condition not fulfilled", method);
-        return;
-      }
       calls.push(method);
       for (GraphWriter w : writers) {
-        w.start(identifier);
+//        w.start(identifier);
         w.node(method);
       }
 

@@ -28,7 +28,9 @@ import com.dkarv.jdcallgraph.util.log.Logger;
 import com.dkarv.jdcallgraph.util.StackItem;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 public class CallRecorder {
@@ -38,27 +40,23 @@ public class CallRecorder {
    * Collect the call graph per thread.
    */
   static final Map<Long, CallGraph> GRAPHS = new HashMap<>();
-
-  public static void beforeMethod(String className, String methodName, int lineNumber, boolean testMethod, boolean
-      returnSafe) {
-    beforeMethod(new StackItem(className, methodName, lineNumber, testMethod, returnSafe));
-  }
-
   public static void beforeMethod(StackItem item) {
     try {
       LOG.trace(">> {}{}", item, item.isReturnSafe() ? "" : " (return unsafe)");
-      long threadId = Thread.currentThread().getId();
-      GRAPHS.putIfAbsent(threadId, new CallGraph(threadId));
+      Long threadId = Thread.currentThread().getId();
+      synchronized (GRAPHS) {
+        if (!GRAPHS.containsKey(threadId)) {
+          System.out.println("shiv: thread-id: " + threadId + "  name: " + Thread.currentThread().getName() + " Time: " + System.currentTimeMillis() + " map size: " + GRAPHS.size());
+
+          GRAPHS.put(threadId, new CallGraph(threadId));
+        }
+      }
       GRAPHS.get(threadId).called(item);
     } catch (Throwable e) {
       LOG.error("Error in beforeMethod", e);
     }
   }
 
-  public static void afterMethod(String className, String methodName, int lineNumber, boolean testMethod, boolean
-      returnSafe) {
-    afterMethod(new StackItem(className, methodName, lineNumber,testMethod, returnSafe));
-  }
 
   public static void afterMethod(StackItem item) {
     try {

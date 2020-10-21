@@ -25,39 +25,46 @@ package com.dkarv.jdcallgraph.writer;
 
 import com.dkarv.jdcallgraph.util.StackItem;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
 
-public class CsvCoverageFileWriter implements GraphWriter {
-  FileWriter writer;
+public class GraphDBCSVFileWriter implements GraphWriter {
+  private FileWriter writer;
 
-  private final Map<StackItem, Set<StackItem>> usedIn = new HashMap<>();
-  private StackItem currentItem;
+  private final Set<StackItem> trace = new HashSet<>();
 
-  public CsvCoverageFileWriter() throws IOException {
+  public GraphDBCSVFileWriter(long threadId) throws IOException {
       if (writer == null) {
-        writer = new FileWriter("/cg/coverage.csv");
+        writer = new FileWriter("/cg/graphdb-" + threadId +".csv");
+        //TODO: below line is getting printed multiple times within a thread.
+//        writer.append("from_id|from_label|from_package|from_class|from_method|from_params|to_id|to_label|to_package|to_class|to_method|to_params\n");
       }
   }
-
   @Override
   public void start(String identifier) throws IOException {
-
   }
 
   @Override
   public void node(StackItem method) throws IOException {
-    currentItem = method.isTestMethod() ? method : null;
+//    writer.append(method.toString());
+//    trace.clear();
   }
 
   @Override
   public void edge(StackItem from, StackItem to) throws IOException {
-    if(currentItem == null && from.isTestMethod()) {
-      currentItem = from;
-    }
+    StringBuilder line = new StringBuilder();
+    String fromString = from.toGraphDBCSV();
+    String toString = to.toGraphDBCSV();
 
-    usedIn.putIfAbsent(to, new HashSet<StackItem>());
-    usedIn.get(to).add(currentItem);
+    line.append(fromString.hashCode()).append('|');
+    line.append(fromString).append('|');
+    line.append(toString.hashCode()).append('|');
+    line.append(toString).append('\n');
+    //There should be a single call to writer.append(), otherwise multiple threads will jumble up the data
+    writer.append(line.toString());
   }
 
   @Override
@@ -67,28 +74,15 @@ public class CsvCoverageFileWriter implements GraphWriter {
 
   @Override
   public void end() throws IOException {
+//    writer.append('\n');
   }
 
   @Override
   public void close() throws IOException {
-    for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
-      if(entry.getValue().size() == 0) continue;
-      String key = entry.getKey().toString();
-      boolean sourceAdded = false;
-      for (StackItem item : entry.getValue()) {
-        if(item != null) {
-          if (!sourceAdded) {
-            writer.append(key);
-            sourceAdded = true;
-          }
-          writer.append(';');
-          writer.append(item.toString());
-        }
-      }
-      if(sourceAdded) {
-        writer.append('\n');
-      }
+    if(writer == null) {
+      //TODO: log error
+    } else {
+      writer.close();
     }
-    writer.close();
   }
 }

@@ -50,6 +50,7 @@ public class FileWriter {
 
   void append(String text) throws IOException {
     writer.write(text);
+    writer.flush(); //shiv: TODO do we need this? its less performant
   }
 
   void append(char c) throws IOException {

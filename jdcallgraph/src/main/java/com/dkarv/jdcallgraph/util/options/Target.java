@@ -57,10 +57,14 @@ public enum Target {
   DD_TRACE,
 
   /**
-   * All methods used per entry in Graph DB format
+   * All methods used per entry in Graph DB format. It has cypher MERGE syntax
    */
-  GRAPH_DB;
+  GRAPH_DB,
 
+  /**
+   * All methods used per entry in Graph DB format. It is in csv format, delimited by '|'
+   */
+  GRAPH_DB_CSV;
   public boolean isDataDependency() {
     return this == Target.DD_DOT || this == Target.DD_TRACE;
   }

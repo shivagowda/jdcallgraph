@@ -79,10 +79,30 @@ public class StackItem {
     return Formatter.graphDBFormat(this, nodeName);
   }
 
+  // formatting for GraphDB CSV
+  public String toGraphDBCSV() {
+    StringBuffer result = new StringBuffer();
+
+    String parameters = this.getMethodParameters();
+    if(parameters.isEmpty()) {
+      parameters = "void";
+    }
+
+    String codeType = this.isTestMethod() ? "Test" : "Source";
+    result.append(codeType);
+    result.append("|").append(this.getPackageName());
+    result.append("|").append(this.getShortClassName());
+    result.append("|").append(this.getShortMethodName());
+    result.append("|").append(parameters);
+
+    return result.toString();
+  }
+
   @Override
   public int hashCode() {
     return 31 * 31 * className.hashCode()
         + 31 * methodName.hashCode();
+
 //        + lineNumber;
   }
 

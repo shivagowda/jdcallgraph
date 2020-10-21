@@ -25,7 +25,9 @@ package com.dkarv.jdcallgraph.writer;
 
 import com.dkarv.jdcallgraph.util.StackItem;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,12 +36,15 @@ public class CsvTraceFileWriter implements GraphWriter {
 
   private final Set<StackItem> trace = new HashSet<>();
 
+  public CsvTraceFileWriter() throws IOException {
+    if (writer == null) {
+      writer = new FileWriter("/cg/trace.csv");
+    }
+  }
+
   @Override
   public void start(String identifier) throws IOException {
-    if (writer == null) {
-      int index = identifier.lastIndexOf('/');
-      writer = new FileWriter(identifier.substring(0, index) + "/trace.csv");
-    }
+
   }
 
   @Override
