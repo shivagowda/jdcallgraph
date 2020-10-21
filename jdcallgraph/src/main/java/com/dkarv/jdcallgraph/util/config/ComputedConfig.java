@@ -48,6 +48,7 @@ public class ComputedConfig {
   }
 
   public static boolean lineNeeded() {
-    return Config.getInst().format().contains("{line}");
+//    return Config.getInst().format().contains("{line}");
+    return false;
   }
 }
