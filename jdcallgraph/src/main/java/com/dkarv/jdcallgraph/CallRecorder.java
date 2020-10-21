@@ -44,12 +44,10 @@ public class CallRecorder {
     try {
       LOG.trace(">> {}{}", item, item.isReturnSafe() ? "" : " (return unsafe)");
       Long threadId = Thread.currentThread().getId();
-      synchronized (GRAPHS) {
         if (!GRAPHS.containsKey(threadId)) {
 //          System.out.println("shiv: thread-id: " + threadId + "  name: " + Thread.currentThread().getName() + " Time: " + System.currentTimeMillis() + " map size: " + GRAPHS.size());
 
           GRAPHS.put(threadId, new CallGraph(threadId));
-        }
       }
       GRAPHS.get(threadId).called(item);
     } catch (Throwable e) {
