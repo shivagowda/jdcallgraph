@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -64,20 +65,9 @@ public class Tracer {
 
     ShutdownHook.init();
 
-    // TODO move this to config
-    String[] excls = new String[]{
-        "java.*", "sun.*", "com.sun.*", "jdk.internal.*",
-        "com.dkarv.jdcallgraph.*", "org.xml.sax.*",
-        "org.apache.maven.surefire.*", "org.apache.tools.*", /*"org.mockito.*",*/
-        "org.easymock.internal.*",
-        "org.junit.*", "junit.framework.*", "org.hamcrest.*", /*"org.objenesis.*"*/
-        "edu.washington.cs.mut.testrunner.Formatter"
-    };
-    List<Pattern> excludes = new ArrayList<>();
-    for (String exclude : excls) {
-      excludes.add(Pattern.compile(exclude + "$"));
-    }
+    //TODO: read from config
+    List<String> includes = Arrays.asList("io.harness.", "software.wings.", "com.mkyong");
 
-      new ByteBuddyInstr(excludes).instrument(instrumentation);
+      new ByteBuddyInstr(includes).instrument(instrumentation);
   }
 }

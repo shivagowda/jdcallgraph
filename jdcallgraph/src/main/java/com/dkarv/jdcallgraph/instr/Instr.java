@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public abstract class Instr {
-  protected final List<Pattern> excludes;
+  protected final List<String> includes;
 
-  public Instr(List<Pattern> excludes) {
-    this.excludes = excludes;
+  public Instr(List<String> includes) {
+    this.includes = includes;
   }
 
   public abstract void instrument(Instrumentation instrumentation);

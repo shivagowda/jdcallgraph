@@ -36,11 +36,13 @@ import net.bytebuddy.asm.AsmVisitorWrapper;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
-import org.junit.Test;
-//import org.junit.jupiter.api.Test; //TODO: support different unit test frameworks
+//import org.junit.Test; //TODO: this doesn't work for org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Test; //TODO: support different unit test frameworks. This works for both
 
 import java.lang.instrument.Instrumentation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -50,8 +52,19 @@ import java.util.regex.Pattern;
 public class ByteBuddyInstr extends Instr {
   private final static Logger LOG = new Logger(ByteBuddyInstr.class);
 
-  public ByteBuddyInstr(List<Pattern> excludes) {
-    super(excludes);
+    public static ElementMatcher.Junction nameStartsWithAnyOf(List<String> includes) {
+        ElementMatcher.Junction matcher = null;
+        for (String pkg : includes) {
+            matcher = matcher == null
+                    ? ElementMatchers.nameStartsWith(pkg)
+                    : matcher.or(ElementMatchers.nameStartsWith(pkg));
+        }
+        return matcher == null
+                ? ElementMatchers.none()
+                : matcher;
+    }
+  public ByteBuddyInstr(List<String> includes) {
+    super(includes);
   }
 
   @Override
@@ -61,11 +74,12 @@ public class ByteBuddyInstr extends Instr {
     final Advice constructorAdvice = Advice.to(ConstructorTracer.class);
     final Advice testConstructorAdvice = Advice.to(TestConstructorTracer.class);
 
+    ElementMatcher.Junction matcher = nameStartsWithAnyOf(includes);
 
     ResettableClassFileTransformer agent = new AgentBuilder.Default()
         .with(new TracerLogger())
-            .type(ElementMatchers.nameStartsWith("io.harness.")) //TODO: parameterize
-            .transform(new AgentBuilder.Transformer() {
+        .type(matcher)
+        .transform(new AgentBuilder.Transformer() {
           @Override
           public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
               builder = builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.isMethod().and(ElementMatchers.isAnnotatedWith(Test.class)), testMethodAdvice));
