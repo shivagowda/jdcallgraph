@@ -38,8 +38,8 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.utility.JavaModule;
-//import org.junit.Test; //TODO: this doesn't work for org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Test; //TODO: support different unit test frameworks. This works for both
+import org.junit.Test; //TODO: this doesn't work for org.junit.jupiter.api.Test
+//import org.junit.jupiter.api.Test; //TODO: support different unit test frameworks. This works for both
 
 import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
