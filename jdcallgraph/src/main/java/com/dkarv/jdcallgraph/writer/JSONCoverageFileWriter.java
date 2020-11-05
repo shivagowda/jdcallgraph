@@ -116,6 +116,8 @@ public class JSONCoverageFileWriter implements GraphWriter {
     source.put("class", key.getShortClassName());
     source.put("method", key.getShortMethodName());
     source.put("params", parameters);
+    int hashCode = source.hashCode();
+    source.put("id", hashCode);
     return source;
   }
 
