@@ -54,7 +54,9 @@ public class CallGraph {
     // TODO redo this with new remove duplicate strategies
     switch (t) {
       case COVERAGE:
-        return new CsvCoverageFileWriter();
+        return new CsvCoverageFileWriter(this.threadId);
+      case COVERAGE_JSON:
+        return new JSONCoverageFileWriter(this.threadId);
       case TRACE:
         return new CsvTraceFileWriter();
       case GRAPH_DB:

@@ -24,20 +24,22 @@
 package com.dkarv.jdcallgraph.writer;
 
 import com.dkarv.jdcallgraph.util.StackItem;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 
-public class CsvCoverageFileWriter implements GraphWriter {
+public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
 
   private final Map<StackItem, Set<StackItem>> usedIn = new HashMap<>();
   private StackItem currentItem;
 
-  public CsvCoverageFileWriter(long threadId) throws IOException {
-    if (writer == null) {
-      writer = new FileWriter("/cg/coverage-" + threadId +".csv");
-    }
+  public JSONCoverageFileWriter(long threadId) throws IOException {
+      if (writer == null) {
+        writer = new FileWriter("/cg/coverage-" + threadId +".json");
+      }
   }
 
   @Override
@@ -70,26 +72,47 @@ public class CsvCoverageFileWriter implements GraphWriter {
   public void end() throws IOException {
   }
 
+
+
+
   @Override
   public void close() throws IOException {
     for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
       if(entry.getValue().size() == 0) continue;
-      String key = entry.getKey().toString();
+      StackItem key = entry.getKey();
+      JSONObject json = new JSONObject();
+      List<Map<String,Object>> tests = new ArrayList<>();
       boolean sourceAdded = false;
       for (StackItem item : entry.getValue()) {
         if(item != null) {
           if (!sourceAdded) {
-            writer.append(key);
+            Map<String, Object> source = getStringObjectMap(key);
+            json.put("source", source);
             sourceAdded = true;
           }
-          writer.append(';');
-          writer.append(item.toString());
+          tests.add(getStringObjectMap(item));
         }
       }
+      json.put("tests", tests);
+      writer.append(json.toString());
       if(sourceAdded) {
         writer.append('\n');
       }
     }
     writer.close();
   }
+
+  private Map<String, Object> getStringObjectMap(StackItem key) {
+    String parameters = key.getMethodParameters();
+    if(parameters.isEmpty()) {
+      parameters = "void";
+    }
+    Map<String, Object> source = new HashMap<>();
+    source.put("package",key.getPackageName());
+    source.put("class", key.getShortClassName());
+    source.put("method", key.getShortMethodName());
+    source.put("params", parameters);
+    return source;
+  }
+
 }

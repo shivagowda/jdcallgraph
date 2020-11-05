@@ -40,6 +40,10 @@ public enum Target {
    */
   COVERAGE,
   /**
+   * Coverage JSON.
+   */
+  COVERAGE_JSON,
+  /**
    * All methods used per entry.
    */
   TRACE,
