@@ -93,7 +93,9 @@ public class JSONCoverageFileWriter implements GraphWriter {
           tests.add(getStringObjectMap(item));
         }
       }
-      json.put("tests", tests);
+      if(tests.size() > 0) {
+        json.put("tests", tests);
+      }
       writer.append(json.toString());
       if(sourceAdded) {
         writer.append('\n');
