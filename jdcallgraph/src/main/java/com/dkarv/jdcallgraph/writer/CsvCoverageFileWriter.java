@@ -55,8 +55,9 @@ public class CsvCoverageFileWriter implements GraphWriter {
     if(currentItem == null && from.isTestMethod()) {
       currentItem = from;
     }
-
-    usedIn.putIfAbsent(to, new HashSet<StackItem>());
+    if(!usedIn.containsKey(to)) {
+      usedIn.put(to, new HashSet<StackItem>());
+    }
     usedIn.get(to).add(currentItem);
   }
 
