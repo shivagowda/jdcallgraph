@@ -33,7 +33,7 @@ import java.util.*;
 public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
 
-  private final Map<StackItem, Set<StackItem>> usedIn = new HashMap<>();
+  private Map<StackItem, Set<StackItem>> usedIn = new HashMap<>();
   private StackItem currentItem;
 
   public JSONCoverageFileWriter(long threadId) throws IOException {
@@ -93,6 +93,8 @@ public class JSONCoverageFileWriter implements GraphWriter {
           tests.add(getStringObjectMap(item));
         }
       }
+      //remove map entry
+      usedIn.remove(key);
       if(tests.size() > 0) {
         json.put("tests", tests);
       }
@@ -103,6 +105,7 @@ public class JSONCoverageFileWriter implements GraphWriter {
         writer.append('\n');
       }
     }
+    usedIn = new HashMap<>();
     writer.close();
   }
 
