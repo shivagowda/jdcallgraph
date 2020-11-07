@@ -68,23 +68,27 @@ public class JSONCoverageFileWriter implements GraphWriter {
     this.edge(from, to);
   }
 
+  //Same as close() without writer.close();
   @Override
   public void end() throws IOException {
+    writeToFile();
   }
-
-
-
 
   @Override
   public void close() throws IOException {
+    writeToFile();
+    writer.close();
+  }
+
+  private void writeToFile() throws IOException {
     for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
-      if(entry.getValue().size() == 0) continue;
+      if (entry.getValue().size() == 0) continue;
       StackItem key = entry.getKey();
       JSONObject json = new JSONObject();
-      List<Map<String,Object>> tests = new ArrayList<>();
+      List<Map<String, Object>> tests = new ArrayList<>();
       boolean sourceAdded = false;
       for (StackItem item : entry.getValue()) {
-        if(item != null) {
+        if (item != null) {
           if (!sourceAdded) {
             Map<String, Object> source = getStringObjectMap(key);
             json.put("source", source);
@@ -95,18 +99,17 @@ public class JSONCoverageFileWriter implements GraphWriter {
       }
       //remove map entry
       usedIn.remove(key);
-      if(tests.size() > 0) {
+      if (tests.size() > 0) {
         json.put("tests", tests);
       }
-      if(json.length() > 0) {
-        writer.append(json.toString());
+      if (json.length() > 0) {
+        writer.append(json.toString()+'\n');
       }
-      if(sourceAdded) {
-        writer.append('\n');
-      }
+//      if (sourceAdded) {
+//        writer.append('\n');
+//      }
     }
     usedIn = new HashMap<>();
-    writer.close();
   }
 
   private Map<String, Object> getStringObjectMap(StackItem key) {
