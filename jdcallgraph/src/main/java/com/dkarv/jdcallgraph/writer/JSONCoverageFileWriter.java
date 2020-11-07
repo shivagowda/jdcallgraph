@@ -58,14 +58,13 @@ public class JSONCoverageFileWriter implements GraphWriter {
     if(currentItem == null && from.isTestMethod()) {
       currentItem = from;
     }
-
-    if(currentItem != null) {
-      writeToFile(to, currentItem);
-    }
+    writeToFile(to, currentItem);
   }
 
   private void writeToFile(StackItem source, StackItem test) throws IOException {
-
+    if(source == null || test == null) {
+      return;
+    }
     JSONObject json = new JSONObject();
     Map<String, Object> node = getStringObjectMap(source);
     json.put("source", node);
