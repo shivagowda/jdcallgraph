@@ -29,12 +29,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
-  final int BUFFER_SIZE = 100;
+  final int BUFFER_SIZE = 10;
 
-  private Map<StackItem, Set<StackItem>> usedIn = new HashMap<>();
+  private Map<StackItem, Set<StackItem>> usedIn = new ConcurrentHashMap<>();
   private StackItem currentItem;
 
   public JSONCoverageFileWriter(long threadId) throws IOException {
@@ -85,7 +86,7 @@ public class JSONCoverageFileWriter implements GraphWriter {
     writer.close();
   }
 
-  private void writeToFile() throws IOException {
+  synchronized private void writeToFile() throws IOException {
     for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
       if (entry.getValue().size() == 0) continue;
       StackItem key = entry.getKey();
