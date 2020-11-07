@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
   final int BUFFER_SIZE = 10;
-
   private Map<StackItem, Set<StackItem>> usedIn = new ConcurrentHashMap<>();
   private StackItem currentItem;
 
@@ -59,14 +58,21 @@ public class JSONCoverageFileWriter implements GraphWriter {
     if(currentItem == null && from.isTestMethod()) {
       currentItem = from;
     }
-    if(!usedIn.containsKey(to)) {
-      usedIn.put(to, new HashSet<StackItem>());
+
+    if(currentItem != null) {
+      writeToFile(to, currentItem);
     }
-    usedIn.get(to).add(currentItem);
-    //periodically write to file to avoid OOM
-    if(usedIn.size() >= BUFFER_SIZE) {
-      writeToFile();
-    }
+  }
+
+  private void writeToFile(StackItem source, StackItem test) throws IOException {
+
+    JSONObject json = new JSONObject();
+    Map<String, Object> node = getStringObjectMap(source);
+    json.put("source", node);
+
+    node = getStringObjectMap(test);
+    json.put("test", node);
+    writer.append(json.toString()+'\n');
   }
 
   @Override

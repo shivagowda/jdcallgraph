@@ -70,6 +70,7 @@ public class CallGraph {
 
   public void called(StackItem method) throws IOException {
     if (calls.isEmpty()) {
+
       // First node
       calls.push(method);
       for (GraphWriter w : writers) {
