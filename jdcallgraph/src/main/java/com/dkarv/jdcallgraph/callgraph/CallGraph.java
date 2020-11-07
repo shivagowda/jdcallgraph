@@ -69,88 +69,89 @@ public class CallGraph {
   }
 
   public void called(StackItem method) throws IOException {
-    if (calls.isEmpty()) {
 
-      // First node
-      calls.push(method);
-      for (GraphWriter w : writers) {
-//        w.start(identifier);
-        w.node(method);
-      }
-
-    } else { //it's not a first node in the stack
-      StackItem top = calls.peek();
-      /* TODO: do we really need to cleanup the calls stack to keep in sync with system call-stack?
-        This is causing to miss mapping of some methods
-      if (!top.isReturnSafe()) { //if constructor
-        // The parent might be a constructor where we can't track the method exit if an exception occurs
-        // check stack trace and remove element from calls if it returned unnoticed
-        // n == 0: Thread.currentThread().getStackTrace()
-        // n == 1: <method>
-        // n == 2: caller of <method>
-        StackTraceElement element = StackTraceUtils.getNthParent(method, 1);
-        // TODO this does not work for two methods called the same
-        // It might work to check line # method 1 < line # stack trace < line # method 2
-        LOG.info("Check if {} returned silently?", top);
-        LOG.info("According to stack trace: {} -> {}", element, method);
-        while (!top.isReturnSafe() && !top.equalTo(element)) {
-          // The parent constructor already returned but we did not notice
-          // TODO writer.end?
-          LOG.debug("Remove element {}, its return was not noticed", calls.pop());
-          if(calls.empty()) break;
-          top = calls.peek();
-        }
-      } */
-
-      for (GraphWriter w : writers) {
-        w.edge(top, method);
-      }
-      calls.push(method);
-    }
+//    if (calls.isEmpty()) {
+//
+//      // First node
+//      calls.push(method);
+//      for (GraphWriter w : writers) {
+////        w.start(identifier);
+//        w.node(method);
+//      }
+//
+//    } else { //it's not a first node in the stack
+//      StackItem top = calls.peek();
+//      /* TODO: do we really need to cleanup the calls stack to keep in sync with system call-stack?
+//        This is causing to miss mapping of some methods
+//      if (!top.isReturnSafe()) { //if constructor
+//        // The parent might be a constructor where we can't track the method exit if an exception occurs
+//        // check stack trace and remove element from calls if it returned unnoticed
+//        // n == 0: Thread.currentThread().getStackTrace()
+//        // n == 1: <method>
+//        // n == 2: caller of <method>
+//        StackTraceElement element = StackTraceUtils.getNthParent(method, 1);
+//        // TODO this does not work for two methods called the same
+//        // It might work to check line # method 1 < line # stack trace < line # method 2
+//        LOG.info("Check if {} returned silently?", top);
+//        LOG.info("According to stack trace: {} -> {}", element, method);
+//        while (!top.isReturnSafe() && !top.equalTo(element)) {
+//          // The parent constructor already returned but we did not notice
+//          // TODO writer.end?
+//          LOG.debug("Remove element {}, its return was not noticed", calls.pop());
+//          if(calls.empty()) break;
+//          top = calls.peek();
+//        }
+//      } */
+//
+//      for (GraphWriter w : writers) {
+//        w.edge(top, method);
+//      }
+//      calls.push(method);
+//    }
   }
 
   public void returned(StackItem method) throws IOException {
-    // TODO optimize for the case removed == 1
-    Stack<StackItem> trace = new Stack<>();
-    int removed = 0;
-    boolean found = false;
-    while (!calls.isEmpty() && !found) {
-      removed++;
-      StackItem topItem = calls.pop();
-      trace.push(topItem);
-      if (topItem.equals(method)) {
-        found = true;
-      }
-    }
-    if (removed != 1) {
-      LOG.error("Error when method {} returned:", method);
-      LOG.error("Removed {} entries. Stack trace {}", removed, trace);
-    }
-    if (!found) {
-      LOG.error("Couldn't find the returned method call on stack");
-    }
-    if (calls.isEmpty()) {
-      for (GraphWriter w : writers) {
-        w.end();
-      }
-    }
+//    // TODO optimize for the case removed == 1
+//    Stack<StackItem> trace = new Stack<>();
+//    int removed = 0;
+//    boolean found = false;
+//    while (!calls.isEmpty() && !found) {
+//      removed++;
+//      StackItem topItem = calls.pop();
+//      trace.push(topItem);
+//      if (topItem.equals(method)) {
+//        found = true;
+//      }
+//    }
+//    if (removed != 1) {
+//      LOG.error("Error when method {} returned:", method);
+//      LOG.error("Removed {} entries. Stack trace {}", removed, trace);
+//    }
+//    if (!found) {
+//      LOG.error("Couldn't find the returned method call on stack");
+//    }
+//    if (calls.isEmpty()) {
+//      for (GraphWriter w : writers) {
+//        w.end();
+//      }
+//    }
   }
 
   public void finish() throws IOException {
-    if (!calls.isEmpty()) {
-      LOG.info("Shutdown but call graph not empty: {}", calls);
-      for (StackItem item : calls) {
-        if (item.isReturnSafe()) {
-          LOG.error("Shutdown and safe element still on stack: {}", item);
-        }
-      }
-      for (GraphWriter w : writers) {
-        w.end();
-      }
-    }
-
-    for (GraphWriter w : writers) {
-      w.close();
-    }
+//    if (!calls.isEmpty()) {
+//      LOG.info("Shutdown but call graph not empty: {}", calls);
+//      for (StackItem item : calls) {
+//        if (item.isReturnSafe()) {
+//          LOG.error("Shutdown and safe element still on stack: {}", item);
+//        }
+//      }
+//      for (GraphWriter w : writers) {
+//        w.end();
+//      }
+//    }
+//
+//    for (GraphWriter w : writers) {
+//      w.close();
+//    }
   }
 }
