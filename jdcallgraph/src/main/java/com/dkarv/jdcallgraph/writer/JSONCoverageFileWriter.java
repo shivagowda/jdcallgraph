@@ -32,6 +32,7 @@ import java.util.*;
 
 public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
+  final int BUFFER_SIZE = 1000;
 
   private Map<StackItem, Set<StackItem>> usedIn = new HashMap<>();
   private StackItem currentItem;
@@ -61,6 +62,10 @@ public class JSONCoverageFileWriter implements GraphWriter {
       usedIn.put(to, new HashSet<StackItem>());
     }
     usedIn.get(to).add(currentItem);
+    //periodically write to file to avoid OOM
+    if(usedIn.size() >= BUFFER_SIZE) {
+      writeToFile();
+    }
   }
 
   @Override
