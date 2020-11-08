@@ -43,10 +43,7 @@ public class CallGraph {
     this.threadId = threadId;
     Target[] targets = Config.getInst().writeTo();
     for (Target target : targets) {
-      if (!target.isDataDependency()) {
-        // Do not handle the DATA dependence graph
         writers.add(createWriter(target, false));
-      }
     }
   }
 
@@ -70,7 +67,7 @@ public class CallGraph {
 
   public void called(StackItem method) throws IOException {
 
-    if (calls.isEmpty()) {
+    if (calls.isEmpty() && method.isTestMethod()) { //first item pushed to stack should be test
 
       // First node
       calls.push(method);
@@ -112,20 +109,20 @@ public class CallGraph {
 
   public void returned(StackItem method) throws IOException {
     // TODO optimize for the case removed == 1
-    Stack<StackItem> trace = new Stack<>();
+//    Stack<StackItem> trace = new Stack<>();
     int removed = 0;
     boolean found = false;
     while (!calls.isEmpty() && !found) {
       removed++;
       StackItem topItem = calls.pop();
-      trace.push(topItem);
+//      trace.push(topItem);
       if (topItem.equals(method)) {
         found = true;
       }
     }
     if (removed != 1) {
       LOG.error("Error when method {} returned:", method);
-      LOG.error("Removed {} entries. Stack trace {}", removed, trace);
+//      LOG.error("Removed {} entries. Stack trace {}", removed, trace);
     }
     if (!found) {
       LOG.error("Couldn't find the returned method call on stack");

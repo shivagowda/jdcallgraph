@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
   final int BUFFER_SIZE = 10;
-  private Map<StackItem, Set<StackItem>> usedIn = new ConcurrentHashMap<>();
+//  private Map<StackItem, Set<StackItem>> usedIn = new ConcurrentHashMap<>();
   private StackItem currentItem;
 
   public JSONCoverageFileWriter(long threadId) throws IOException {
@@ -92,35 +92,36 @@ public class JSONCoverageFileWriter implements GraphWriter {
   }
 
   synchronized private void writeToFile() throws IOException {
-    for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
-      if (entry.getValue().size() == 0) continue;
-      StackItem key = entry.getKey();
-      JSONObject json = new JSONObject();
-      List<Map<String, Object>> tests = new ArrayList<>();
-      boolean sourceAdded = false;
-      for (StackItem item : entry.getValue()) {
-        if (item != null) {
-          if (!sourceAdded) {
-            Map<String, Object> source = getStringObjectMap(key);
-            json.put("source", source);
-            sourceAdded = true;
-          }
-          tests.add(getStringObjectMap(item));
-        }
-      }
-      //remove map entry
-      usedIn.remove(key);
-      if (tests.size() > 0) {
-        json.put("tests", tests);
-      }
-      if (json.length() > 0) {
-        writer.append(json.toString()+'\n');
-      }
-//      if (sourceAdded) {
-//        writer.append('\n');
+    return ;
+//    for (Map.Entry<StackItem, Set<StackItem>> entry : usedIn.entrySet()) {
+//      if (entry.getValue().size() == 0) continue;
+//      StackItem key = entry.getKey();
+//      JSONObject json = new JSONObject();
+//      List<Map<String, Object>> tests = new ArrayList<>();
+//      boolean sourceAdded = false;
+//      for (StackItem item : entry.getValue()) {
+//        if (item != null) {
+//          if (!sourceAdded) {
+//            Map<String, Object> source = getStringObjectMap(key);
+//            json.put("source", source);
+//            sourceAdded = true;
+//          }
+//          tests.add(getStringObjectMap(item));
+//        }
 //      }
-    }
-    usedIn = new HashMap<>();
+//      //remove map entry
+//      usedIn.remove(key);
+//      if (tests.size() > 0) {
+//        json.put("tests", tests);
+//      }
+//      if (json.length() > 0) {
+//        writer.append(json.toString()+'\n');
+//      }
+////      if (sourceAdded) {
+////        writer.append('\n');
+////      }
+//    }
+//    usedIn = new HashMap<>();
   }
 
   private Map<String, Object> getStringObjectMap(StackItem key) {
