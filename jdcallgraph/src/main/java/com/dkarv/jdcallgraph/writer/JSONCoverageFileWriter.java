@@ -31,10 +31,21 @@ import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+class Relation {
+  StackItem source, test;
+  Relation(StackItem source, StackItem test){
+    this.source = source;
+    this.test = test;
+  }
+}
+
 public class JSONCoverageFileWriter implements GraphWriter {
   FileWriter writer;
-  final int BUFFER_SIZE = 10;
+  final int SET_CAPACITY = 10000;
 //  private Map<StackItem, Set<StackItem>> usedIn = new ConcurrentHashMap<>();
+  private Set<Relation> relations = new HashSet<>(SET_CAPACITY);
+  private Set<Integer> relationsHash = new HashSet<>(SET_CAPACITY);
+
   private StackItem currentItem;
 
   public JSONCoverageFileWriter(long threadId) throws IOException {
@@ -58,7 +69,25 @@ public class JSONCoverageFileWriter implements GraphWriter {
     if(currentItem == null && from.isTestMethod()) {
       currentItem = from;
     }
-    writeToFile(to, currentItem);
+    int hash = Objects.hash(to,currentItem);
+    if(relationsHash.contains(hash)) {
+      //duplicate relation, ignore
+      return;
+    }
+    relationsHash.add(hash);
+    relations.add(new Relation(to, currentItem));
+    if(relations.size() == SET_CAPACITY) {
+      flushRelations();
+    }
+  }
+
+  // Write relations to file
+  private void flushRelations() throws IOException {
+    for(Relation relation : relations) {
+      writeToFile(relation.source, relation.test);
+    }
+    relations.clear();
+    relationsHash.clear();
   }
 
   private void writeToFile(StackItem source, StackItem test) throws IOException {
@@ -83,11 +112,13 @@ public class JSONCoverageFileWriter implements GraphWriter {
   @Override
   public void end() throws IOException {
 //    writeToFile();
+    flushRelations();
   }
 
   @Override
   public void close() throws IOException {
 //    writeToFile();
+    flushRelations();
     writer.close();
   }
 

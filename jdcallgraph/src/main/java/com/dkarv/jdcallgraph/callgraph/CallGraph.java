@@ -87,7 +87,6 @@ public class CallGraph {
 
   public void returned(StackItem method) throws IOException {
 
-    boolean found = false;
     while (!calls.isEmpty()) {
       StackItem topItem = calls.pop();
       if (topItem.equals(method)) {

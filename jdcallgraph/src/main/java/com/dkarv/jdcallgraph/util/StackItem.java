@@ -25,6 +25,8 @@ package com.dkarv.jdcallgraph.util;
 
 import com.dkarv.jdcallgraph.util.options.Formatter;
 
+import java.util.Objects;
+
 public class StackItem {
   private final String className;
   private final String methodName;
@@ -100,8 +102,9 @@ public class StackItem {
 
   @Override
   public int hashCode() {
-    return 31 * 31 * className.hashCode()
-        + 31 * methodName.hashCode();
+   return Objects.hash(className, methodName);
+//    return 31 * 31 * className.hashCode()
+//        + 31 * methodName.hashCode();
 
 //        + lineNumber;
   }
