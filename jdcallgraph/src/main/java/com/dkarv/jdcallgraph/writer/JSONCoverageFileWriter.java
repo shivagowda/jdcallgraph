@@ -82,12 +82,12 @@ public class JSONCoverageFileWriter implements GraphWriter {
   //Same as close() without writer.close();
   @Override
   public void end() throws IOException {
-    writeToFile();
+//    writeToFile();
   }
 
   @Override
   public void close() throws IOException {
-    writeToFile();
+//    writeToFile();
     writer.close();
   }
 
