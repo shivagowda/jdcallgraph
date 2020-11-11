@@ -34,16 +34,17 @@ public abstract class CallableTracer {
   private static final boolean needsLine = ComputedConfig.lineNeeded();
 
   public static StackItem enter(String type, String method, String signature, boolean testMethod, boolean returnSafe) {
-    signature = Format.simplifySignatureArrays(signature);
-
-    int lineNumber= -1;
-
-    StackItem item = new StackItem(type, method, signature, lineNumber, testMethod, returnSafe);
-    CallRecorder.beforeMethod(item);
-    return item;
+    return null;
+//    signature = Format.simplifySignatureArrays(signature);
+//
+//    int lineNumber= -1;
+//
+//    StackItem item = new StackItem(type, method, signature, lineNumber, testMethod, returnSafe);
+//    CallRecorder.beforeMethod(item);
+//    return item;
   }
 
   public static void exit(StackItem item) {
-    CallRecorder.afterMethod(item);
+   // CallRecorder.afterMethod(item);
   }
 }
